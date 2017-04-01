@@ -1,0 +1,38 @@
+grammar CsStructuredQuery
+  rule multi_query
+    '(' operator_type:('and' / 'or') space first_exp:(expression / expression_query) rest:(space query)* space? ')' {
+    }
+  end
+
+  rule query
+    '(' operator_type:('and' / 'or' / 'not') ' ' exp:expression ')' {
+      def operator
+        operator_type.text_value
+      end
+
+      def expression
+        exp.text_value
+      end
+    }
+  end
+
+  rule space
+    [ \t\n\r]+
+  end
+
+  rule expression
+    expression_field ':' expression_value:expression_simple_value
+  end
+
+  rule expression_field
+    [a-zA-Z_0-9]+
+  end
+
+  rule expression_simple_value
+    "'" value:([^ '\t\n\r]+) "'"
+  end
+
+  rule expression_query
+    query
+  end
+end
